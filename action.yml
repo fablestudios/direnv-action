@@ -1,8 +1,8 @@
-name: 'direnv action'
-description: 'Privides environment variables via direnv'
+name: "use direnv"
+description: "Provides environment variables via direnv"
 branding:
   icon: play
   color: green
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"
