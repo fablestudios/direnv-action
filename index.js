@@ -35,7 +35,7 @@ async function run() {
 }
 
 function hasCommand(command) {
-  const { status } = cp.spawnSync("command -v direnv");
+  const { status } = cp.spawnSync(`command -v ${command}`);
   return status === 0;
 }
 
