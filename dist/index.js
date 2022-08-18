@@ -178,7 +178,7 @@ async function run() {
       core.info("direnv is already installed (via asdf)");
       direnv = "asdf exec direnv";
     } else {
-      core.info("Installing direnv");
+      core.info("asdf not found; installing now");
       cp.execSync(`bash ${install}`, {
         encoding: "utf-8",
       });
