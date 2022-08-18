@@ -8,7 +8,7 @@ async function run() {
     const install = path.join(__dirname, "install-direnv.sh");
 
     core.info("Installing direnv");
-    cp.execSync(`curl -sfL ${install} | bash > /dev/null 2>&1`, {
+    cp.execSync(`bash ${install}`, {
       encoding: "utf-8",
     });
 
