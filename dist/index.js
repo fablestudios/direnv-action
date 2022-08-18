@@ -170,20 +170,23 @@ const path = __webpack_require__(622);
 async function run() {
   try {
     const install = path.join(__dirname, "install-direnv.sh");
+    let direnv = "direnv";
 
-    const direnvInstalled = cp.spawnSync("command -v direnv");
-    if (direnvInstalled.status !== 0) {
+    if (hasCommand("direnv")) {
+      core.info("direnv is already installed");
+    } else if (hasAsdfDirenv()) {
+      core.info("direnv is already installed (via asdf)");
+      direnv = "asdf exec direnv";
+    } else {
       core.info("Installing direnv");
       cp.execSync(`bash ${install}`, {
         encoding: "utf-8",
       });
-    } else {
-      core.info("direnv is already installed");
     }
 
-    cp.execSync("direnv allow", { encoding: "utf-8" });
+    cp.execSync(`${direnv} allow`, { encoding: "utf-8" });
     const envs = JSON.parse(
-      cp.execSync("direnv export json", { encoding: "utf-8" })
+      cp.execSync(`${direnv} export json`, { encoding: "utf-8" })
     );
 
     Object.keys(envs).forEach(function (name) {
@@ -193,6 +196,18 @@ async function run() {
   } catch (error) {
     core.setFailed(error.message);
   }
+}
+
+function hasCommand(command) {
+  const { status } = cp.spawnSync("command -v direnv");
+  return status === 0;
+}
+
+function hasAsdfDirenv() {
+  if (!hasCommand("asdf")) return false;
+
+  const { status } = cp.spawnSync("asdf where direnv");
+  return status === 0;
 }
 
 run();
