@@ -7,10 +7,15 @@ async function run() {
   try {
     const install = path.join(__dirname, "install-direnv.sh");
 
-    core.info("Installing direnv");
-    cp.execSync(`bash ${install}`, {
-      encoding: "utf-8",
-    });
+    const direnvInstalled = cp.spawnSync("command -v direnv");
+    if (direnvInstalled.status !== 0) {
+      core.info("Installing direnv");
+      cp.execSync(`bash ${install}`, {
+        encoding: "utf-8",
+      });
+    } else {
+      core.info("direnv is already installed");
+    }
 
     cp.execSync("direnv allow", { encoding: "utf-8" });
     const envs = JSON.parse(
