@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const cp = require("child_process");
+const fs = require("fs");
 const path = require("path");
 
 // most @actions toolkit packages have async methods
@@ -12,7 +13,7 @@ async function run() {
       core.info("direnv is already installed");
     } else if (hasAsdfDirenv()) {
       core.info("direnv is already installed (via asdf)");
-      direnv = "asdf exec direnv";
+      direnv = `${findAsdf()} exec direnv`;
     } else {
       core.info("asdf not found; installing now");
       cp.execSync(`bash ${install}`, {
@@ -39,10 +40,18 @@ function hasCommand(command) {
   return status === 0;
 }
 
-function hasAsdfDirenv() {
-  if (!hasCommand("asdf")) return false;
+function findAsdf() {
+  if (hasCommand("asdf")) return "asdf";
 
-  const { status } = cp.spawnSync("asdf where direnv");
+  const localAsdf = path.join(process.env.HOME, ".asdf", "bin", "asdf");
+  if (fs.existsSync(localAsdf)) return localAsdf;
+}
+
+function hasAsdfDirenv() {
+  const asdf = findAsdf();
+  if (!asdf) return false;
+
+  const { status } = cp.spawnSync(`${asdf} where direnv`);
   return status === 0;
 }
 
